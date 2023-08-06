@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 
 namespace Luval.Framework.Entities
 {
-    internal interface IEntity
+    internal interface IEntity<T>
     {
+
+        public T Id { get; set; }
     }
 }
