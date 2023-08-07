@@ -36,7 +36,7 @@ namespace Luval.Framework.Core.Configuration
         }
 
         /// <inheritdoc/>
-        public string GetOrDefault(string name)
+        public string Get(string name)
         {
             if (!Internal.ContainsKey(name)) return null;
             return Internal[name];

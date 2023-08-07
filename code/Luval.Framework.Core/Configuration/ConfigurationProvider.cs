@@ -14,14 +14,16 @@ namespace Luval.Framework.Core.Configuration
         /// </summary>
         public List<IConfigurationProvider> Providers { get; private set; }
 
-        public ConfigurationProvider(IEnumerable<IConfigurationProvider> providers)
+
+
+        public ConfigurationProvider(params IConfigurationProvider[] providers)
         {
             Providers = new List<IConfigurationProvider>(providers);
         }
 
 
         /// <inheritdoc/>
-        public string GetOrDefault(string name)
+        public string Get(string name)
         {
             return GetOrDefault(name, null);
         }
@@ -31,7 +33,7 @@ namespace Luval.Framework.Core.Configuration
         public string GetOrDefault(string name, string defaultValue)
         {
             foreach (var provider in Providers) { 
-                var val = provider.GetOrDefault(name);
+                var val = provider.Get(name);
                 if(val != null) return val;
             }
             return defaultValue;

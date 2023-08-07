@@ -25,7 +25,7 @@ namespace Luval.Framework.Core.Configuration
         /// </summary>
         /// <param name="name">The name for the setting to retrieve</param>
         /// <returns>The value for the setting</returns>
-        string GetOrDefault(string name);
+        string Get(string name);
 
 
         /// <summary>

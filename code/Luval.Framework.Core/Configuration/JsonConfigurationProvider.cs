@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -21,5 +22,6 @@ namespace Luval.Framework.Core.Configuration
             if(string.IsNullOrWhiteSpace(jsonContent)) throw new ArgumentNullException(nameof(jsonContent));
             return JsonConvert.DeserializeObject<Dictionary<string, string>>(jsonContent);
         }
+
     }
 }
