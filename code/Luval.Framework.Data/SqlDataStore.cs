@@ -1,50 +1,123 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Data.Entity;
+using System.Data.Entity.Infrastructure;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Luval.Framework.Data
 {
-    public class SqlDataStore : IDataStore
+    public class SqlDataStore : ISqlDataStore
     {
-        public SqlDataStore()
+        public SqlDataStore(DbContext context)
         {
+            Context = context;
+            _properties = Context.GetType().GetProperties();
+            _sets = new Dictionary<Type, object>();
         }
 
-        public Task<int> AddAsync<TEntity>(TEntity entity, CancellationToken cancellationToken)
+        private DbSet<TEntity> GetSet<TEntity>() where TEntity : class
         {
-            throw new NotImplementedException();
+            var qType = typeof(DbSet<TEntity>);
+            if (_sets.ContainsKey(qType)) return (DbSet<TEntity>)_sets[qType];
+
+            var p = _properties.FirstOrDefault(i => i.DeclaringType == qType);
+            if (p != null)
+            {
+                _sets[qType] = p.GetValue(Context);
+                return GetSet<TEntity>();
+            }
+            throw new ArgumentException("Entity not found");
         }
 
-        public Task<int> AddAsync<TEntity>(IEnumerable<TEntity> entity, CancellationToken cancellationToken)
+        private PropertyInfo[] _properties;
+        private Dictionary<Type, object> _sets;
+        public DbContext Context { get; private set; }
+
+
+        #region Interface Implementation
+        public Task<TEntity> FindAsync<TEntity>(object[] keys, CancellationToken cancellationToken) where TEntity : class
         {
-            throw new NotImplementedException();
+            return GetSet<TEntity>().FindAsync(keys, cancellationToken);
         }
 
-        public Task<int> DeleteAsync<TEntity>(TEntity entity, CancellationToken cancellationToken)
+        public Task<DbSqlQuery<TEntity>> QueryAsync<TEntity>(string query, object[] parameters, CancellationToken cancellationToken) where TEntity : class
         {
-            throw new NotImplementedException();
+            return Task.Run(() =>
+            {
+                return GetSet<TEntity>().SqlQuery(query, parameters);
+            }, cancellationToken);
         }
 
-        public Task<int> DeleteAsync<TEntity>(IEnumerable<TEntity> entity, CancellationToken cancellationToken)
+        public Task<TEntity> AddAsync<TEntity>(TEntity entity, CancellationToken cancellationToken) where TEntity : class
         {
-            throw new NotImplementedException();
+            return Task.Run(() =>
+            {
+                return GetSet<TEntity>().Add(entity);
+            }, cancellationToken);
+        }
+
+        public Task<IEnumerable<TEntity>> AddAsync<TEntity>(IEnumerable<TEntity> entity, CancellationToken cancellationToken) where TEntity : class
+        {
+            return Task.Run(() =>
+            {
+                return GetSet<TEntity>().AddRange(entity);
+            }, cancellationToken);
+        }
+
+        public Task<TEntity> UpdateAsync<TEntity>(TEntity entity, CancellationToken cancellationToken) where TEntity : class
+        {
+            return Task.Run(() =>
+            {
+                var ds = GetSet<TEntity>();
+                if(!ds.Local.Any(i => i == entity))
+                {
+                    ds.Attach(entity);
+                }
+                Context.Entry(entity).State = EntityState.Modified;
+                return entity;
+            }, cancellationToken);
+        }
+
+        public Task<IEnumerable<TEntity>> UpdateAsync<TEntity>(IEnumerable<TEntity> entity, CancellationToken cancellationToken) where TEntity : class
+        {
+            return Task.Run(() => { 
+                var res = new List<TEntity>();
+                foreach(TEntity e in entity)
+                {
+                    res.Add(UpdateAsync<TEntity>(e, cancellationToken).Result);
+                }
+                return (IEnumerable<TEntity>)res;
+            }, cancellationToken);
+        }
+
+        public Task<TEntity> DeleteAsync<TEntity>(TEntity entity, CancellationToken cancellationToken) where TEntity : class
+        {
+            return Task.Run(() =>
+            {
+                return GetSet<TEntity>().Remove(entity);
+            }, cancellationToken);
+        }
+
+        public Task<IEnumerable<TEntity>> DeleteAsync<TEntity>(IEnumerable<TEntity> entity, CancellationToken cancellationToken) where TEntity : class
+        {
+            return Task.Run(() =>
+            {
+                return GetSet<TEntity>().RemoveRange(entity);
+            }, cancellationToken);
         }
 
         public Task<int> SaveChangesAsync(CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            return Context.SaveChangesAsync(cancellationToken);
         }
+        #endregion
 
-        public Task<int> UpdateAsync<TEntity>(TEntity entity, CancellationToken cancellationToken)
-        {
-            throw new NotImplementedException();
-        }
 
-        public Task<int> UpdateAsync<TEntity>(IEnumerable<TEntity> entity, CancellationToken cancellationToken)
-        {
-            throw new NotImplementedException();
-        }
+
+
     }
 }

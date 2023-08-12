@@ -20,7 +20,7 @@ namespace Luval.Framework.Data
         /// <param name="entity">The entity</param>
         /// <param name="cancellationToken">A <see cref="CancellationToken"/> to observe while waiting for the task to complete.</param>
         /// <returns>A <see cref="Task"/> with the number of affected recordds</returns>
-        Task<int> AddAsync<TEntity>(TEntity entity, CancellationToken cancellationToken);
+        Task<TEntity> AddAsync<TEntity>(TEntity entity, CancellationToken cancellationToken) where TEntity : class;
 
         /// <summary>
         /// Adds the given entities to the context underlying the set in the Added state such that it will be inserted into the data store when SaveChanges is called.
@@ -29,7 +29,7 @@ namespace Luval.Framework.Data
         /// <param name="entity">The entities</param>
         /// <param name="cancellationToken">A <see cref="CancellationToken"/> to observe while waiting for the task to complete.</param>
         /// <returns>A <see cref="Task"/> with the number of affected recordds</returns>
-        Task<int> AddAsync<TEntity>(IEnumerable<TEntity> entity, CancellationToken cancellationToken);
+        Task<IEnumerable<TEntity>> AddAsync<TEntity>(IEnumerable<TEntity> entity, CancellationToken cancellationToken) where TEntity : class;
 
         /// <summary>
         /// Updates the given entity to the context underlying the set in the Updated state such that it will be inserted into the data store when SaveChanges is called.
@@ -38,7 +38,7 @@ namespace Luval.Framework.Data
         /// <param name="entity">The entity</param>
         /// <param name="cancellationToken">A <see cref="CancellationToken"/> to observe while waiting for the task to complete.</param>
         /// <returns>A <see cref="Task"/> with the number of affected recordds</returns>
-        Task<int> UpdateAsync<TEntity>(TEntity entity, CancellationToken cancellationToken);
+        Task<TEntity> UpdateAsync<TEntity>(TEntity entity, CancellationToken cancellationToken) where TEntity : class;
 
         /// <summary>
         /// Updates the given entity to the context underlying the set in the Updated state such that it will be inserted into the data store when SaveChanges is called.
@@ -47,7 +47,7 @@ namespace Luval.Framework.Data
         /// <param name="entity">The entities</param>
         /// <param name="cancellationToken">A <see cref="CancellationToken"/> to observe while waiting for the task to complete.</param>
         /// <returns>A <see cref="Task"/> with the number of affected recordds</returns>
-        Task<int> UpdateAsync<TEntity>(IEnumerable<TEntity> entity, CancellationToken cancellationToken);
+        Task<IEnumerable<TEntity>> UpdateAsync<TEntity>(IEnumerable<TEntity> entity, CancellationToken cancellationToken) where TEntity : class;
 
 
         /// <summary>
@@ -57,7 +57,7 @@ namespace Luval.Framework.Data
         /// <param name="entity">The entity</param>
         /// <param name="cancellationToken">A <see cref="CancellationToken"/> to observe while waiting for the task to complete.</param>
         /// <returns>A <see cref="Task"/> with the number of affected recordds</returns>
-        Task<int> DeleteAsync<TEntity>(TEntity entity, CancellationToken cancellationToken);
+        Task<TEntity> DeleteAsync<TEntity>(TEntity entity, CancellationToken cancellationToken) where TEntity : class;
 
         /// <summary>
         /// Marks the given entities as Deleted such that it will be deleted from the database when SaveChanges is called. Note that the entity must exist in the context in some other state before this method is called.
@@ -66,7 +66,7 @@ namespace Luval.Framework.Data
         /// <param name="entity">The entity</param>
         /// <param name="cancellationToken">A <see cref="CancellationToken"/> to observe while waiting for the task to complete.</param>
         /// <returns>A <see cref="Task"/> with the number of affected recordds</returns>
-        Task<int> DeleteAsync<TEntity>(IEnumerable<TEntity> entity, CancellationToken cancellationToken);
+        Task<IEnumerable<TEntity>> DeleteAsync<TEntity>(IEnumerable<TEntity> entity, CancellationToken cancellationToken) where TEntity : class;
 
         /// <summary>
         /// Saves all changes made in this context to the target data store
