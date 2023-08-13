@@ -5,6 +5,7 @@ using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Reflection;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -39,12 +40,12 @@ namespace Luval.Framework.Data
 
 
         #region Interface Implementation
-        public Task<TEntity> FindAsync<TEntity>(object[] keys, CancellationToken cancellationToken) where TEntity : class
+        public virtual Task<TEntity> FindAsync<TEntity>(object[] keys, CancellationToken cancellationToken) where TEntity : class
         {
             return GetSet<TEntity>().FindAsync(keys, cancellationToken);
         }
 
-        public Task<DbSqlQuery<TEntity>> QueryAsync<TEntity>(string query, object[] parameters, CancellationToken cancellationToken) where TEntity : class
+        public virtual Task<DbSqlQuery<TEntity>> QueryAsync<TEntity>(string query, object[] parameters, CancellationToken cancellationToken) where TEntity : class
         {
             return Task.Run(() =>
             {
@@ -52,7 +53,7 @@ namespace Luval.Framework.Data
             }, cancellationToken);
         }
 
-        public Task<TEntity> AddAsync<TEntity>(TEntity entity, CancellationToken cancellationToken) where TEntity : class
+        public virtual Task<TEntity> AddAsync<TEntity>(TEntity entity, CancellationToken cancellationToken) where TEntity : class
         {
             return Task.Run(() =>
             {
@@ -60,7 +61,7 @@ namespace Luval.Framework.Data
             }, cancellationToken);
         }
 
-        public Task<IEnumerable<TEntity>> AddAsync<TEntity>(IEnumerable<TEntity> entity, CancellationToken cancellationToken) where TEntity : class
+        public virtual Task<IEnumerable<TEntity>> AddAsync<TEntity>(IEnumerable<TEntity> entity, CancellationToken cancellationToken) where TEntity : class
         {
             return Task.Run(() =>
             {
@@ -68,7 +69,7 @@ namespace Luval.Framework.Data
             }, cancellationToken);
         }
 
-        public Task<TEntity> UpdateAsync<TEntity>(TEntity entity, CancellationToken cancellationToken) where TEntity : class
+        public virtual Task<TEntity> UpdateAsync<TEntity>(TEntity entity, CancellationToken cancellationToken) where TEntity : class
         {
             return Task.Run(() =>
             {
@@ -82,7 +83,7 @@ namespace Luval.Framework.Data
             }, cancellationToken);
         }
 
-        public Task<IEnumerable<TEntity>> UpdateAsync<TEntity>(IEnumerable<TEntity> entity, CancellationToken cancellationToken) where TEntity : class
+        public virtual Task<IEnumerable<TEntity>> UpdateAsync<TEntity>(IEnumerable<TEntity> entity, CancellationToken cancellationToken) where TEntity : class
         {
             return Task.Run(() => { 
                 var res = new List<TEntity>();
@@ -94,7 +95,7 @@ namespace Luval.Framework.Data
             }, cancellationToken);
         }
 
-        public Task<TEntity> DeleteAsync<TEntity>(TEntity entity, CancellationToken cancellationToken) where TEntity : class
+        public virtual Task<TEntity> DeleteAsync<TEntity>(TEntity entity, CancellationToken cancellationToken) where TEntity : class
         {
             return Task.Run(() =>
             {
@@ -102,7 +103,7 @@ namespace Luval.Framework.Data
             }, cancellationToken);
         }
 
-        public Task<IEnumerable<TEntity>> DeleteAsync<TEntity>(IEnumerable<TEntity> entity, CancellationToken cancellationToken) where TEntity : class
+        public virtual Task<IEnumerable<TEntity>> DeleteAsync<TEntity>(IEnumerable<TEntity> entity, CancellationToken cancellationToken) where TEntity : class
         {
             return Task.Run(() =>
             {
@@ -110,7 +111,7 @@ namespace Luval.Framework.Data
             }, cancellationToken);
         }
 
-        public Task<int> SaveChangesAsync(CancellationToken cancellationToken)
+        public virtual  Task<int> SaveChangesAsync(CancellationToken cancellationToken)
         {
             return Context.SaveChangesAsync(cancellationToken);
         }

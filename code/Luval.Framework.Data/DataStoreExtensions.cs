@@ -30,84 +30,84 @@ namespace Luval.Framework.Data
         }
 
 
-        public static Task<TEntity> FindAsync<TEntity>(this ISqlDataStore ds, object[] keys)
+        public static Task<TEntity> FindAsync<TEntity>(this ISqlDataStore ds, object[] keys) where TEntity : class
         {
             return ds.FindAsync<TEntity>(keys, CancellationToken.None);
         }
 
-        public static TEntity Find<TEntity>(this ISqlDataStore ds, object[] keys)
+        public static TEntity Find<TEntity>(this ISqlDataStore ds, object[] keys) where TEntity : class
         {
             return ds.FindAsync<TEntity>(keys, CancellationToken.None).Result;
         }
 
 
-        public static Task<int> AddAsync<TEntity>(this IDataStore ds, TEntity entity)
+        public static Task<TEntity> AddAsync<TEntity>(this IDataStore ds, TEntity entity) where TEntity : class
         {
             return ds.AddAsync(entity, CancellationToken.None);
         }
 
-        public static Task<int> AddAsync<TEntity>(this IDataStore ds, IEnumerable<TEntity> entity)
+        public static Task<IEnumerable<TEntity>> AddAsync<TEntity>(this IDataStore ds, IEnumerable<TEntity> entity)
         {
             return ds.AddAsync(entity, CancellationToken.None);
         }
 
-        public static int Add<TEntity>(this IDataStore ds, TEntity entity)
+        public static TEntity Add<TEntity>(this IDataStore ds, TEntity entity) where TEntity : class
         {
             return ds.AddAsync(entity, CancellationToken.None).Result;
         }
 
-        public static int Add<TEntity>(this IDataStore ds, IEnumerable<TEntity> entity)
+        public static IEnumerable<TEntity> Add<TEntity>(this IDataStore ds, IEnumerable<TEntity> entity)
         {
             return ds.AddAsync(entity, CancellationToken.None).Result;
         }
 
-        public static Task<int> UpdateAsync<TEntity>(this IDataStore ds, TEntity entity)
+        public static Task<TEntity> UpdateAsync<TEntity>(this IDataStore ds, TEntity entity) where TEntity : class
         {
             return ds.UpdateAsync(entity, CancellationToken.None);
         }
 
-        public static Task<int> UpdateAsync<TEntity>(this IDataStore ds, IEnumerable<TEntity> entity)
+        public static Task<IEnumerable<TEntity>> UpdateAsync<TEntity>(this IDataStore ds, IEnumerable<TEntity> entity)
         {
             return ds.UpdateAsync(entity, CancellationToken.None);
         }
 
-        public static int Update<TEntity>(this IDataStore ds, TEntity entity)
+        public static TEntity Update<TEntity>(this IDataStore ds, TEntity entity) where TEntity : class
         {
             return ds.UpdateAsync(entity, CancellationToken.None).Result;
         }
 
-        public static int Update<TEntity>(this IDataStore ds, IEnumerable<TEntity> entity)
+        public static IEnumerable<TEntity> Update<TEntity>(this IDataStore ds, IEnumerable<TEntity> entity)
         {
             return ds.UpdateAsync(entity, CancellationToken.None).Result;
         }
 
-        public static Task<int> DeleteAsync<TEntity>(this IDataStore ds, TEntity entity)
+        public static Task<TEntity> DeleteAsync<TEntity>(this IDataStore ds, TEntity entity) where TEntity : class
         {
             return ds.DeleteAsync(entity, CancellationToken.None);
         }
 
-        public static Task<int> DeleteAsync<TEntity>(this IDataStore ds, IEnumerable<TEntity> entity)
+        public static Task<IEnumerable<TEntity>> DeleteAsync<TEntity>(this IDataStore ds, IEnumerable<TEntity> entity)
         {
             return ds.DeleteAsync(entity, CancellationToken.None);
         }
 
-        public static int Delete<TEntity>(this IDataStore ds, TEntity entity)
+        public static TEntity Delete<TEntity>(this IDataStore ds, TEntity entity) where TEntity : class
         {
             return ds.DeleteAsync(entity, CancellationToken.None).Result;
         }
 
-        public static int Delete<TEntity>(this IDataStore ds, IEnumerable<TEntity> entity)
+        public static IEnumerable<TEntity> Delete<TEntity>(this IDataStore ds, IEnumerable<TEntity> entity)
         {
             return ds.DeleteAsync(entity, CancellationToken.None).Result;
         }
 
 
-        public static int AddOrUpdate<TEntity>(this ISqlDataStore ds, IEnumerable<TEntity> entities) where TEntity : class
+        public static IEnumerable<TEntity> AddOrUpdate<TEntity>(this ISqlDataStore ds, IEnumerable<TEntity> entities) where TEntity : class
         {
             return ds.AddOrUpdateAsync(entities, CancellationToken.None).Result;
         }
 
-        public static Task<int> AddOrUpdateAsync<TEntity>(this ISqlDataStore ds, IEnumerable<TEntity> entities) where TEntity : class
+        public static Task<IEnumerable<TEntity>> AddOrUpdateAsync<TEntity>(this ISqlDataStore ds, IEnumerable<TEntity> entities) where TEntity : class
         {
             return ds.AddOrUpdateAsync(entities, CancellationToken.None);
         }
@@ -127,9 +127,9 @@ namespace Luval.Framework.Data
             return AddOrUpdateAsync(ds, new[] { entity }, cancellationToken);
         }
 
-        public static async  Task<int> AddOrUpdateAsync<TEntity>(this ISqlDataStore ds, IEnumerable<TEntity> entities, CancellationToken cancellationToken) where TEntity : class
+        public static async  Task<IEnumerable<TEntity>> AddOrUpdateAsync<TEntity>(this ISqlDataStore ds, IEnumerable<TEntity> entities, CancellationToken cancellationToken) where TEntity : class
         {
-            var res = 0;
+            var res = new List<TEntity>();
             foreach (var item in entities)
             {
                 var keys = GetKeysFromEntity<TEntity>(item);
@@ -137,12 +137,12 @@ namespace Luval.Framework.Data
                 {
                     var e = await ds.FindAsync<TEntity>(keys, cancellationToken);
                     if (e != null)
-                        res += await ds.UpdateAsync<TEntity>(e, cancellationToken);
+                        res.Add(await ds.UpdateAsync<TEntity>(e, cancellationToken));
                     else
-                        res += await ds.AddAsync<TEntity>(item, cancellationToken);
+                        res.Add(await ds.AddAsync<TEntity>(item, cancellationToken));
                 }
                 else
-                    res += await ds.AddAsync<TEntity>(item, cancellationToken);
+                    res.Add(await ds.AddAsync<TEntity>(item, cancellationToken));
             }
             return res;
         }
