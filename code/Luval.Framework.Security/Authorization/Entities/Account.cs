@@ -13,8 +13,10 @@ namespace Luval.Framework.Security.Authorization.Entities
 
         [Index]
         public string Name { get; set; }
-        public string Type { get; set; }
+        public AccountType Type { get; set; }
         public DateTime? UtcExpiresOn { get; set; }
         public string? JsonData { get; set; }
     }
+
+    public enum AccountType { Free, Tier1, Tier2, Tier3, Tier4, Tier5, Tier6, Tier7, Tier8, Tier9 }
 }

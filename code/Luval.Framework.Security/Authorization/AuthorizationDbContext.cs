@@ -18,6 +18,16 @@ namespace Luval.Framework.Security.Authorization
         public DbSet<UserRole> UserRoles { get; set; }
         public DbSet<User> Users { get; set; }
 
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+            modelBuilder.Entity<Account>()
+                .Property(p => p.Type)
+                .HasConversion(
+                    v => v.ToString(),
+                    v => (AccountType)Enum.Parse(typeof(AccountType), v));
+        }
+
         public virtual async Task<int> SeedDataAsync(CancellationToken cancellationToken = default)
         {
             if (!SecurityRoles.Any())

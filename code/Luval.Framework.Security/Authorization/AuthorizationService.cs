@@ -82,7 +82,7 @@ namespace Luval.Framework.Security.Authorization
             var account = Context.Accounts.FirstOrDefault(i => i.Name == email);
             if (account == null)
             {
-                account = Context.Accounts.Add(new Account() { Name = email, Type = "Free", CreatedBy = "System", UpdatedBy = "System" }).Entity;
+                account = Context.Accounts.Add(new Account() { Name = email, Type = AccountType.Free }).Entity;
                 await Context.SaveChangesAsync(cancellationToken);
             }
             return account;
@@ -117,7 +117,7 @@ namespace Luval.Framework.Security.Authorization
             if (role.Claims == null || !role.Claims.Any())
             {
                 var claim = await GetDefaultClaim(cancellationToken);
-                Context.SecurityRoleClaims.Add(new SecurityRoleClaim() { SecurityClaim = claim, SecurityRole = role, CreatedBy = "System", UpdatedBy = "System" });
+                Context.SecurityRoleClaims.Add(new SecurityRoleClaim() { SecurityClaim = claim, SecurityRole = role });
                 await Context.SaveChangesAsync(cancellationToken);
             }
             return role;
@@ -127,18 +127,10 @@ namespace Luval.Framework.Security.Authorization
         {
             if (!Context.SecurityClaims.Any())
             {
-                Context.SecurityClaims.Add(new SecurityClaim() { Name = "navigation", CreatedBy = "System", UpdatedBy = "System" });
-                Context.SecurityClaims.Add(new SecurityClaim() { Name = "read", CreatedBy = "System", UpdatedBy = "System" });
-                Context.SecurityClaims.Add(new SecurityClaim() { Name = "write", CreatedBy = "System", UpdatedBy = "System" });
-                Context.SecurityClaims.Add(new SecurityClaim() { Name = "delete", CreatedBy = "System", UpdatedBy = "System" });
+                await Context.SecurityClaims.AddRangeAsync(SecurityClaim.GetInitialValues(), cancellationToken);
                 await Context.SaveChangesAsync(cancellationToken);
             }
-            var claim = Context.SecurityClaims.FirstOrDefault(i => i.Name == "navigation");
-            if (claim == null)
-            {
-                claim = Context.SecurityClaims.Add(new SecurityClaim() { Name = "navigation", CreatedBy = "System", UpdatedBy = "System" }).Entity;
-                await Context.SaveChangesAsync(cancellationToken);
-            }
+            var claim = Context.SecurityClaims.FirstOrDefault(i => i.Name == "Configure");
             return claim;
         }
     }

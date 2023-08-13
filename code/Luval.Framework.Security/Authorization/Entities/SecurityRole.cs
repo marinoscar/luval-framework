@@ -17,7 +17,10 @@ namespace Luval.Framework.Security.Authorization.Entities
         internal static List<SecurityRole> GetInitialValues()
         {
             return new List<SecurityRole>() {
-                new SecurityRole() { Name = "User"  }
+                new SecurityRole() { Name = "Admin" },
+                new SecurityRole() { Name = "Owner" },
+                new SecurityRole() { Name = "User" },
+                new SecurityRole() { Name = "Visitor" },
             };
         }
 
