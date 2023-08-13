@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Luval.Framework.Security.Authorization
 {
-    public class AuthorizationService
+    public class AuthorizationService : IAuthorizationService
     {
 
         public AuthorizationService(IAuthorizationDbContext context)
@@ -22,17 +22,31 @@ namespace Luval.Framework.Security.Authorization
         /// <summary>
         /// This method will make sure the <see cref="ClaimsPrincipal"/> user is registered in the application
         /// </summary>
-        /// <param name="user">The <see cref="OAuthUser"/> user to register</param>
+        /// <param name="user">The <see cref="Entities.IAuthorizationDbContext"/> user to register</param>
         /// <returns></returns>
         public Task<User> RegisterUserAsync(OAuthUser user, CancellationToken cancellationToken)
         {
             return GetOrCreateUserAsync(user, cancellationToken);
         }
 
+
+        /// <summary>
+        /// This method will retrieve and instance of the <see cref="User"/> 
+        /// </summary>
+        /// <param name="email">The user email to use to search the data repository</param>
+        /// <returns>An instance of the <see cref="User"/></returns>
+        public Task<User> GetApplicationUserAync(string email, CancellationToken cancellationToken)
+        {
+            return Task.Run(() =>
+            {
+                return Context.Users.FirstOrDefault(i => i.Email == email);
+            }, cancellationToken);
+        }
+
         protected virtual async Task<User> GetOrCreateUserAsync(OAuthUser oAuthUser, CancellationToken cancellationToken)
         {
             bool hasChanges = false;
-            var user = Context.Users.FirstOrDefault(i => i.Email == oAuthUser.Email);
+            var user = await GetApplicationUserAync(oAuthUser.Email, cancellationToken);
             if (user == null)
             {
                 var account = await GetDefaultAccount(oAuthUser.Email, cancellationToken);

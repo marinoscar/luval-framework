@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Security.Claims;
 
 namespace Luval.Framework.Security.Authorization.Entities
 {
@@ -11,7 +6,6 @@ namespace Luval.Framework.Security.Authorization.Entities
     {
         public OAuthUser()
         {
-            
         }
 
         public OAuthUser(ClaimsPrincipal principal, string providerName)
@@ -34,6 +28,8 @@ namespace Luval.Framework.Security.Authorization.Entities
         public string Name { get; set; }
         public string Surname { get; set; }
 
+        public Dictionary<string, string> Claims { get; set; } = new Dictionary<string, string>();
+
         public static OAuthUser Create(ClaimsPrincipal principal, string providerName)
         {
             return new OAuthUser(principal, providerName);
@@ -43,8 +39,5 @@ namespace Luval.Framework.Security.Authorization.Entities
         {
             return new OAuthUser(principal, "Google");
         }
-
-
-
     }
 }

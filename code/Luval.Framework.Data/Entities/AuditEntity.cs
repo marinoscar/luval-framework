@@ -15,6 +15,8 @@ namespace Luval.Framework.Data.Entities
             UtcCreatedOn = DateTime.UtcNow;
             UtcUpdatedOn = UtcCreatedOn;
             Version = 1;
+            CreatedBy = "System";
+            UpdatedBy = CreatedBy;
         }
 
         [Key]

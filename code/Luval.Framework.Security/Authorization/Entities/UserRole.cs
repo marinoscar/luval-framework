@@ -16,5 +16,8 @@ namespace Luval.Framework.Security.Authorization.Entities
         [ForeignKey("User")]
         public string UserId { get; set; }
         public virtual User User { get; set; }
+
+        internal static List<UserRole> 
+
     }
 }

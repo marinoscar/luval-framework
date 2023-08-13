@@ -13,7 +13,7 @@ namespace Luval.Framework.Security.Authorization.Entities
     {
         public User()
         {
-            
+
         }
 
         public User(OAuthUser oAuthUser)
@@ -41,6 +41,10 @@ namespace Luval.Framework.Security.Authorization.Entities
         public string ProviderKey { get; set; }
         public string? ProfilePicUrl { get; set; }
         public string? JsonData { get; set; }
+
+        [MaxLength(100)]
+        public string? TimeZoneName { get; set; }
+        public int? TimeZoneOffset { get; set; }
         public virtual ICollection<UserRole> UserRoles { get; set; }
     }
 }

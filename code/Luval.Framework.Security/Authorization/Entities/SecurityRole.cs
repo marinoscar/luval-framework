@@ -12,6 +12,15 @@ namespace Luval.Framework.Security.Authorization.Entities
     {
         [Index]
         public string Name { get; set; }
-        public virtual ICollection<SecurityClaim> Claims { get; set; }  
+        public virtual ICollection<SecurityClaim> Claims { get; set; }
+
+        internal static List<SecurityRole> GetInitialValues()
+        {
+            return new List<SecurityRole>() {
+                new SecurityRole() { Name = "User"  }
+            };
+        }
+
+
     }
 }
