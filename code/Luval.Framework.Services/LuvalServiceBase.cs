@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Luval.Framework.Services
 {
-    public abstract class LuvalServiceBase<T> : ILuvalService<T>
+    public abstract class LuvalServiceBase<TIn, TOut> : ILuvalService<TIn, TOut>
     {
 
         public LuvalServiceBase(ILogger logger, string name, ServiceConfiguration serviceConfiguration)
@@ -69,9 +69,9 @@ namespace Luval.Framework.Services
         #endregion
 
         /// <inheritdoc/>
-        public async Task<ServiceResponse<T>> ExecuteAsync()
+        public async Task<ServiceResponse<TOut>> ExecuteAsync(TIn input, CancellationToken cancellationToken)
         {
-            var result = new ServiceResponse<T>();
+            var result = new ServiceResponse<TOut>();
             OnStarted();
             Logger?.LogInformation($"Starting service {Name}");
             var retryCount = 0;
@@ -81,7 +81,7 @@ namespace Luval.Framework.Services
             {
                 try
                 {
-                    result = await DoExecuteAsync();
+                    result = await DoExecuteAsync(input, cancellationToken);
                     success = true;
                 }
                 catch (Exception ex)
@@ -116,6 +116,6 @@ namespace Luval.Framework.Services
             return result;
         }
 
-        protected abstract Task<ServiceResponse<T>> DoExecuteAsync();
+        protected abstract Task<ServiceResponse<TOut>> DoExecuteAsync(TIn input, CancellationToken cancellationToken);
     }
 }

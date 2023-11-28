@@ -2,7 +2,7 @@
 
 namespace Luval.Framework.Services
 {
-    public interface ILuvalService<T>
+    public interface ILuvalService<TIn, TOut>
     {
 
         /// <summary>
@@ -18,7 +18,7 @@ namespace Luval.Framework.Services
         /// <summary>
         /// Executes the service
         /// </summary>
-        Task<ServiceResponse<T>> ExecuteAsync();
+        Task<ServiceResponse<TOut>> ExecuteAsync(TIn input, CancellationToken cancellationToken);
 
         /// <summary>
         /// Indicates that the service has started
