@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Hosting;
+﻿using Luval.Framework.Core;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -42,7 +43,7 @@ namespace Luval.Framework.Services
 
         protected override Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            _timer = new Timer(TimerTick, null,_dueTime.Value,
+            _timer = new Timer(TimerTick, null, _dueTime.Value,
                 _period.Value);
             return Task.CompletedTask;
         }
@@ -57,10 +58,14 @@ namespace Luval.Framework.Services
         private void TimerTick(object? state)
         {
             var count = Interlocked.Increment(ref _executionCount);
+            Logger.LogDebug("Timed Hosted Service is working. Count: {Count}", count);
 
+            OnTimerTick(state);
+        }
+
+        protected virtual void OnTimerTick(object? state)
+        {
             DoWork();
-            Logger.LogDebug(
-                "Timed Hosted Service is working. Count: {Count}", count);
         }
 
         public override Task StopAsync(CancellationToken stoppingToken)
