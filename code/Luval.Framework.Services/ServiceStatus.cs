@@ -30,6 +30,14 @@ namespace Luval.Framework.Services
         /// <summary>
         /// Service is pending
         /// </summary>
-        Pending = 3
+        Pending = 3,
+        /// <summary>
+        /// Indicates that there is a partial failure
+        /// </summary>
+        PartialFailure = 4,
+        /// <summary>
+        /// Indicates that the service was unable to complete the request
+        /// </summary>
+        Incomplete = 5
     }
 }

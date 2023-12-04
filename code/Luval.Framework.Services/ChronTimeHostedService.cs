@@ -16,13 +16,13 @@ namespace Luval.Framework.Services
         public TimeZoneInfo TimeZone { get; set; }
 
 
-        public ChronTimeHostedService(ILogger logger, string chronExpression, string timeZoneId, TimeSpan period) :
-            this(logger, chronExpression, TimeZoneInfo.FindSystemTimeZoneById(timeZoneId), period)
+        public ChronTimeHostedService(ILogger logger, string chronExpression, string timeZoneId, TimeSpan dueTime, TimeSpan period) :
+            this(logger, chronExpression, TimeZoneInfo.FindSystemTimeZoneById(timeZoneId), dueTime, period)
         {
 
         }
-        public ChronTimeHostedService(ILogger logger, string chronExpression, TimeZoneInfo timeZoneInfo, TimeSpan period) : 
-            base(logger, DateTime.UtcNow.AddMinutes(1).TrimSec().Subtract(DateTime.UtcNow), period)
+        public ChronTimeHostedService(ILogger logger, string chronExpression, TimeZoneInfo timeZoneInfo, TimeSpan dueTime, TimeSpan period) : 
+            base(logger, dueTime, period)
         {
             ChronExpression = CronExpression.Parse(chronExpression);
             TimeZone = timeZoneInfo;
@@ -30,8 +30,8 @@ namespace Luval.Framework.Services
 
         protected override void OnTimerTick(object? state)
         {
-            var now = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, TimeZone).TrimMs();
-            var d = ChronExpression.GetNextOccurrence(DateTime.UtcNow)?.TrimMs();
+            var now = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, TimeZone).TrimSec();
+            var d = ChronExpression.GetNextOccurrence(DateTime.UtcNow)?.TrimSec();
             if (d == null)
             {
                 Logger.LogError($"Invalid Chron Expression on {GetType().Name}");
@@ -40,9 +40,12 @@ namespace Luval.Framework.Services
             d = TimeZoneInfo.ConvertTimeFromUtc(d.Value, TimeZone);
 
             if (NextChronOcurrence == null) NextChronOcurrence = d;
-            
+
+            Logger.LogDebug($"Actual: {now} => Class: { NextChronOcurrence } => Chron: { d }");
+
             if (now == NextChronOcurrence)
             {
+                Logger.LogDebug("Running Task");
                 //Starts an async process
                 Task.Run(() => DoWork());
             }
