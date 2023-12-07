@@ -39,6 +39,11 @@ namespace Luval.Framework.Core.Configuration
             return _config.GetOrDefault(name, defaultValue);
         }
 
+        public static bool IsInitialized()
+        {
+            return _config != null;
+        }
+
 
     }
 }
