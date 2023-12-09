@@ -125,6 +125,7 @@ namespace Luval.Framework.Core
 
         public static string GetTextInBetween(this string s, string delimiter)
         {
+            if (!s.Contains(delimiter)) return s;
             var startIndex = s.IndexOf(s);
             var endIndex = s.IndexOf(delimiter, startIndex + delimiter.Length);
             return s.Substring(startIndex, endIndex - startIndex).Replace(delimiter, "");
