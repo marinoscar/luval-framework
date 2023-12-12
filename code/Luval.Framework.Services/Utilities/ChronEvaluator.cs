@@ -1,5 +1,7 @@
 ﻿using Cronos;
 using Luval.Framework.Core;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,11 +17,24 @@ namespace Luval.Framework.Services.Utilities
 
         }
 
-        public ChronEvaluator(string chronExpression, TimeZoneInfo timeZone)
+        public ChronEvaluator(string chronExpression, TimeZoneInfo timeZone) : this(chronExpression, timeZone, new EmptyLogger())
         {
+
+        }
+
+        public ChronEvaluator(string chronExpression, string timeZone, ILogger logger) : this(chronExpression, TimeZoneInfo.FindSystemTimeZoneById(timeZone), logger)
+        {
+
+        }
+
+        public ChronEvaluator(string chronExpression, TimeZoneInfo timeZone, ILogger logger)
+        {
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             ChronExpression = CronExpression.Parse(chronExpression ?? throw new ArgumentNullException(nameof(chronExpression)));
             TimeZone = timeZone ?? throw new ArgumentNullException(nameof(timeZone));
         }
+
+        private readonly ILogger _logger;
 
         protected virtual DateTime? NextChronOcurrence { get; private set; }
         public virtual TimeZoneInfo TimeZone { get; private set; }
@@ -41,13 +56,19 @@ namespace Luval.Framework.Services.Utilities
                 chron = chron.Value.TrimSec();
             }
 
-            if (NextChronOcurrence == null) NextChronOcurrence = chron;
+            chron = TimeZoneInfo.ConvertTimeFromUtc(chron.Value, TimeZone);
+
+            if (NextChronOcurrence == null) 
+                NextChronOcurrence = chron;
 
             var evalTime = TimeZoneInfo.ConvertTimeFromUtc(utcDateTime, TimeZone);
 
             var result = evalTime == NextChronOcurrence;
 
-            if (chron != NextChronOcurrence) NextChronOcurrence = chron;
+            _logger.LogDebug($"Utc: {utcDateTime} Local: {evalTime} => Ocurrence: {NextChronOcurrence} => Chron: {chron} Result: {result}");
+
+            if (chron != NextChronOcurrence)
+                NextChronOcurrence = chron;
 
             return result;
         }
