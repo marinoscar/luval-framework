@@ -56,8 +56,6 @@ namespace Luval.Framework.Services.Utilities
                 chron = chron.Value.TrimSec();
             }
 
-            chron = TimeZoneInfo.ConvertTimeFromUtc(chron.Value, TimeZone);
-
             if (NextChronOcurrence == null) 
                 NextChronOcurrence = chron;
 
