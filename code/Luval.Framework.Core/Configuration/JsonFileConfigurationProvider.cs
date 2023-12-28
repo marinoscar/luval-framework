@@ -1,8 +1,10 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -61,12 +63,12 @@ namespace Luval.Framework.Core.Configuration
         {
             if (string.IsNullOrWhiteSpace(fileName)) throw new ArgumentNullException(nameof(fileName));
 
-            var exeFileName = new FileInfo(System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName);
+            var folerName = GetRootFolderBasedOnOS();
             var env = envName?.ToLowerInvariant();
             var name = fileName.ToLowerInvariant();
             var sec = isSecret ? "secrets" : string.Empty;
             var parts = (new[] { name, env, sec }).Where(i => !string.IsNullOrWhiteSpace(i)).ToList();
-            var fileInfo = new FileInfo(Path.Combine(exeFileName.DirectoryName, $"{string.Join('-', parts)}.json"));
+            var fileInfo = new FileInfo(Path.Combine(folerName, $"{string.Join('-', parts)}.json"));
             if (!fileInfo.Exists) File.WriteAllText(fileInfo.FullName, "{ \"key\" : \"value\" }");
             return new JsonFileConfigurationProvider(fileInfo);
         }
@@ -111,5 +113,18 @@ namespace Luval.Framework.Core.Configuration
         {
             return LoadOrCreate("prod", isSecret);
         }
+
+        private static string GetRootFolderBasedOnOS()
+        {
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                return new FileInfo(System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName).DirectoryName;
+            else
+            {
+                var folder = ConfigurationManager.AppSettings["LinuxFolder"];
+                if (string.IsNullOrEmpty(folder)) throw new Exception($"For non windows platforms is required that the configuration setting: LinuxFolder is provided");
+                return folder;
+            }
+        }
+
     }
 }
