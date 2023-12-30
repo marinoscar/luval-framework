@@ -30,20 +30,21 @@ namespace Luval.Framework.Services
 
         protected override void OnTimerTick(object? state)
         {
-            var now = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, TimeZone).TrimSec();
-            var d = ChronExpression.GetNextOccurrence(DateTime.UtcNow)?.TrimSec();
-            if (d == null)
+            var localTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, TimeZone).TrimSec();
+
+            var expressionResult = ChronExpression.GetNextOccurrence(DateTime.UtcNow.AddDays(-1), true)?.TrimSec();
+            if (expressionResult == null)
             {
                 Logger.LogError($"Invalid Chron Expression on {GetType().Name}");
                 return;
             }
-            d = TimeZoneInfo.ConvertTimeFromUtc(d.Value, TimeZone);
+            expressionResult = TimeZoneInfo.ConvertTimeFromUtc(expressionResult.Value, TimeZone);
 
-            if (NextChronOcurrence == null) NextChronOcurrence = d;
+            if (NextChronOcurrence == null) NextChronOcurrence = expressionResult;
 
-            Logger.LogDebug($"Actual: {now} => Class: { NextChronOcurrence } => Chron: { d }");
+            Logger.LogDebug($"Actual: {localTime} => Class: { NextChronOcurrence } => Chron: { expressionResult }");
 
-            if (now == NextChronOcurrence)
+            if (localTime == NextChronOcurrence)
             {
                 Logger.LogDebug("Running Task");
                 //Starts an async process
@@ -51,7 +52,7 @@ namespace Luval.Framework.Services
             }
             
             //Update the occurrence
-            if (d != NextChronOcurrence) NextChronOcurrence = d;
+            if (expressionResult != NextChronOcurrence) NextChronOcurrence = expressionResult;
 
         }
     }

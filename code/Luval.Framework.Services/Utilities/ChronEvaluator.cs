@@ -42,7 +42,12 @@ namespace Luval.Framework.Services.Utilities
 
         public bool Evaluate(DateTime utcDateTime, bool includeMs, bool includeSeconds)
         {
-            var chron = ChronExpression.GetNextOccurrence(DateTime.UtcNow);
+            var localDateTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, TimeZone);
+            var delta = localDateTime - DateTime.UtcNow;
+            var localUtc = DateTime.UtcNow.AddMilliseconds(delta.TotalMilliseconds);
+
+            var chron = ChronExpression.GetNextOccurrence(localUtc, true);
+
             if (chron == null) throw new ArgumentNullException("Invalid chron expression");
 
             if (!includeMs)
