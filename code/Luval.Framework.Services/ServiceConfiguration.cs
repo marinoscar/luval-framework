@@ -17,6 +17,8 @@ namespace Luval.Framework.Services
         public ServiceConfiguration()
         {
             Settings = new Dictionary<string, string>();
+            NumberOfRetries = 3;
+            RetryIntervalInMs = 500;
         }
 
         /// <summary>
